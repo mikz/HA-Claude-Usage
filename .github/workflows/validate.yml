@@ -1,0 +1,47 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE_CORE: ctrace
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --upgrade pip
+      - run: pip install pytest pytest-testmon ruff
+      - run: ruff check custom_components tests
+      - run: pytest -q
+
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+
+  runtime:
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE_CORE: ctrace
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: pip install homeassistant==2026.9.4 pytest-homeassistant-custom-component==0.13.367 pytest-testmon
+      - run: python -m pytest --testmon-env=ha2026.9.4 -q -o asyncio_mode=auto
+
+# The source repository tests both components. Release archives and the Claude
+# export each contain one integration for HACS installation.

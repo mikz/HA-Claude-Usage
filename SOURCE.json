@@ -1,0 +1,5 @@
+{
+  "repository": "https://github.com/mikz/HA-Chat-GPT-Reset-Alerts",
+  "commit": "855059eb936685dc05ad21f4dc1dcda58283c98a",
+  "component": "custom_components/claude_usage"
+}
